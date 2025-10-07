@@ -1,0 +1,10 @@
+langchain
+langgraph
+langchain-openai
+sqlglot
+sqlite-utils
+fastapi
+uvicorn
+python-dotenv
+pydantic
+rich

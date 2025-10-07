@@ -1,0 +1,16 @@
+# Environment
+venv/
+.env
+__pycache__/
+*.pyc
+
+# VSCode / IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Python
+*.log
+*.sqlite
