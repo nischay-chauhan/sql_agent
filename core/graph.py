@@ -3,8 +3,7 @@ from typing import TypedDict, Any
 from agents.generator import generate_sql
 from agents.validator import validate_or_correct_sql
 from agents.executor import execute_and_summarize
-from core.db import setup_demo_db
-
+from core.db import get_db_connection, setup_demo_db
 class SQLState(TypedDict):
     question: str
     schema: str
@@ -21,9 +20,17 @@ def node_generate(state: SQLState):
     return state
 
 def node_validate(state: SQLState):
-    state["sql_query"] = validate_or_correct_sql(state["sql_query"], state["schema"])
+    result = validate_or_correct_sql(state["sql_query"], state["schema"])
+    
+    if isinstance(result, tuple) and len(result) > 0:
+        state["sql_query"] = result[0] 
+        # Store whether the query was corrected in the state if needed
+        state["was_corrected"] = result[1] if len(result) > 1 else False
+    else:
+        state["sql_query"] = result
+        state["was_corrected"] = False
+    
     return state
-
 def node_execute(state: SQLState):
     rows, summary = execute_and_summarize(cursor, state["question"], state["sql_query"])
     state["result"] = rows

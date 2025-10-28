@@ -1,5 +1,5 @@
 from core.llm import llm
-import json
+import json 
 
 def generate_sql(question, schema):
     prompt = f"""
@@ -28,12 +28,14 @@ Question:
     response = llm.invoke(prompt)
     text = response.content.strip()
 
-    # Try to extract JSON from the LLM response
     try:
         json_data = json.loads(text)
         sql_query = json_data.get("sql", "").strip()
+    except json.JSONDecodeError:
+        sql_query = text.replace("```sql", "").replace("```", "").strip()
+        if not sql_query.endswith(';'):
+            sql_query += ';'
     except Exception:
-        # fallback: try to clean the text manually
-        sql_query = text.replace("```json", "").replace("```", "").strip()
+        sql_query = text
 
     return sql_query
